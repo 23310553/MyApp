@@ -6,7 +6,7 @@ import MixedNodeElement from './MixedNodeElement';
 import PureSvgNodeElement from './PureSvgNodeElement';
 import MixedNodeInputElement from './MixedNodeInputElement';
 import '../App.css';
-import { getDatabase, ref, set, collection, getDocs, where, query } from "firebase/firestore";
+import { collection, getDocs, where, query } from "firebase/firestore";
 import { db } from '../config/firebase';
 
 
@@ -14,7 +14,7 @@ import { db } from '../config/firebase';
 // import orgChartJson from './examples/org-chart.json';
 import flareJson from '../examples/d3-hierarchy-flare.json';
 import reactTree from '../examples/reactRepoTree';
-import { Auth } from './auth';
+// import { Auth } from './auth';
 
 
 

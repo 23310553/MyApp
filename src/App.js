@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 //import bg from './components/assets/bg.png';
 // import Sidebar from './components/widgets/Sidebar';
 import Home from './components/home';
@@ -7,7 +7,7 @@ import Signup from './components/createUser';
 import Login from './components/signInUser';
 import { Routes, Route } from 'react-router-dom';
 // import Navbar from './components/widgets/Navbar';
-import Layout from './components/widgets/Layout';
+// import Layout from './components/widgets/Layout';
 import { BrowserRouter as Router } from 'react-router-dom';
 // import NoteDetail from './page/NoteDetail';
 import ProtectedRoute from './components/widgets/ProtectedRoute';
