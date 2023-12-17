@@ -158,8 +158,8 @@ class MyTree extends Component {
     this.addedNodesCount = 0;
 
     this.state = {
-      data: {fetchData},
-      totalNodeCount: countNodes(0, Array.isArray({fetchData}) ? {fetchData}[0] : {fetchData}),
+      data: {},
+      totalNodeCount: countNodes(0, Array.isArray({}) ? {}[0] : {}),
       orientation: 'horizontal',
       dimensions: undefined,
       centeringTransitionDuration: 800,
