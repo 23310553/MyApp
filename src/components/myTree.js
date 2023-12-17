@@ -19,33 +19,62 @@ import reactTree from '../examples/reactRepoTree';
 
 
 async function fetchData() {
-    var data = {};
-  
+    var associateData = {};
+
     try {
       // First, get users' data
-      const userCollectionRef = collection(db, 'combined');
+      const userCollectionRef = collection(db, 'associates');
       const userSnapshot = await getDocs(userCollectionRef);
 
       userSnapshot.forEach((userDoc) => {
-        
+
         var userDocData = userDoc.data();
-  
-        if (data[userDoc.id] === undefined) {
-        console.log(userDoc.id, " => ",userDoc.data());   
-        data[userDoc.id] = userDocData;
+
+        if (!associateData[userDoc.id]) {
+            userDocData = {
+                id: userDoc.id,
+                ...userDocData
+            }
+
+            associateData[userDoc.id] = userDocData;
+
+            if (!userDocData.ReportsTo) {
+                associateData[null] = userDocData;
+            }
         }
       });
-  
+
+      const reporteesData = Object.entries(associateData).reduce((acc, [key, value]) => {
+        if (!key || key == "null") return acc;
+
+        const { children = [] } = acc;
+        const { ReportsTo } = value;
+        const { id = null } = ReportsTo || {}
+        const { reportees: existing = [] } = acc[id] || {};
+        const reportee = id ? associateData[key] : []
+
+        return {
+            ...acc,
+            [id] : {
+                ...associateData[id],
+                reportees: [...existing, reportee]
+            }
+        }
+      }, {})
+
+      const ceo = reporteesData[null]
+      return mergeIntoTree(associateData[ceo.id], reporteesData, associateData)
+
       // Counter for async events
       var countManagers = 0;
-  
+
       // Iterate through each user to get their events
       for (const userDocId of Object.keys(data)) {
         // Create a query to get all events for each user
         const managersForCurrentUserRef = collection(db,'managers')
         const managerqueryRef = query(managersForCurrentUserRef, where('userID', '==', userDocId));
         const managersForUserSnapshot = await getDocs(managerqueryRef);
-  
+
         managersForUserSnapshot.forEach((doc) => {
           // doc.data() is never undefined for query doc snapshots
           console.log(doc.id, " => ", doc.data());
@@ -53,19 +82,19 @@ async function fetchData() {
 
         // Count events
         countManagers++;
-  
+
         managersForUserSnapshot.forEach((managerDoc) => {
           var managerDocData = managerDoc.data();
-  
+
           // Check if the events array exists, if not, create it
           if (data[managerDocData.userId].children === undefined) {
             data[managerDocData.userId].children = [];
           }
-  
+
           data[managerDocData.userId].children.push(managerDocData);
         });
       }
-  
+
       // Check if all async events have been downloaded
       if (countManagers === Object.keys(data).length) {
         // Lookup for events in every user has finished
@@ -74,10 +103,12 @@ async function fetchData() {
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+
+    return {}
   }
-  
+
   // Call the async function
-  fetchData();
+  //fetchData();
 
 // const employeeCollectionRef = collection(db, `employees`);
 // const employeeQuerySnapshot = await getDocs(employeeCollectionRef);
@@ -94,6 +125,18 @@ async function fetchData() {
 // console.log(employeeCollectionRef)
 // const obj = JSON.parse(employeeCollectionRef);
 
+function mergeIntoTree(associateData, reporteesData, allData) {
+    var mergedItem = {
+        name: associateData.Name,
+        children: []
+    }
+
+    reporteesData[associateData.id]?.reportees?.forEach(reportee => {
+       mergedItem.children.push(mergeIntoTree(allData[reportee.id], reporteesData, allData))
+    })
+
+    return mergedItem;
+}
 
 const customNodeFnMapping = {
   svg: {
@@ -348,6 +391,8 @@ class MyTree extends Component {
 
   componentDidMount() {
     const dimensions = this.treeContainer.getBoundingClientRect();
+    fetchData().then(data => this.setTreeData(data))
+
     this.setState({
       translateX: dimensions.width / 2.5,
       translateY: dimensions.height / 2,
