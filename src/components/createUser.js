@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Text from '../components/elements/Text';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { Formik, Field, Form } from 'formik';
 
@@ -43,9 +43,9 @@ const Signup = () => {
         }
 
         if (!values.password) {
-            errors.password = "Password number is required";
+            errors.password = "Password must contain a number";
         } else if (values.password.length <= 8) {
-            errors.password = "Password length must be more than 7"
+            errors.password = "Password must be more than 7 characters";
         }
 
         if (values.password !== values.confirmPassword) {
@@ -84,6 +84,33 @@ const Signup = () => {
             console.log(error);
         })
     }
+    const onGoogleSubmit = async (e) => {
+                e.preventDefault()
+        
+                const provider = new GoogleAuthProvider();
+                // Start a sign in process for an unauthenticated user.
+                provider.addScope('profile');
+                provider.addScope('email');
+                
+        
+                const result = await signInWithPopup(auth, provider)
+                .then((userResult) => {
+                        // The signed-in user info.
+                const user = userResult.user;
+                // This gives you a Google Access Token.
+                const credential = GoogleAuthProvider.credentialFromResult(result);
+                const token = credential.accessToken;
+                console.log(user)
+                console.log(token);
+                navigate("/login")
+                    
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log(errorCode, errorMessage);
+                });
+            }
    
 
     return (
@@ -95,11 +122,11 @@ const Signup = () => {
                             <div>
                                 <div>
                                     <Text className="text-2xl text-white text-center font-bold mb-2">
-                                        CRM<span className="text-tertiary">App</span>
+                                        CRM App
                                     </Text>
 
                                     <h2 className="text-white text-center text-sm md:text-xs tracking-tight text-gray-900">
-                                        Are you new? Sign up to the Epi Use CRM App today!
+                                        Are you new? Sign up to CRM App today!
                                     </h2>
                                 </div>
 
@@ -232,6 +259,12 @@ const Signup = () => {
                                     </Formik>
                                 </div>
                             </div>
+                            <br />
+                            <div>
+                                Want to use your Google account?{' '}
+                                <button onClick={onGoogleSubmit}> Sign up with Google </button>
+                            </div> 
+                            <br />
 
                             <p className="mt-10 text-sm text-white text-center">
                                 Already have an account?{' '}
@@ -254,136 +287,3 @@ const Signup = () => {
 }
 
 export default Signup
-
-// import React, {useState} from 'react';
-// import { NavLink, useNavigate } from 'react-router-dom';
-// import {  GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-// import { auth } from '../config/firebase';
- 
-// const Signup = () => {
-//     const navigate = useNavigate();
- 
-//     const [email, setEmail] = useState('')
-//     const [password, setPassword] = useState('');
- 
-//     const onSubmit = async (e) => {
-//       e.preventDefault()
-     
-//       await createUserWithEmailAndPassword(auth, email, password)
-//         .then((userCredential) => {
-//             // Signed in
-//             const user = userCredential.user;
-//             console.log(user);
-//             navigate("/login")
-//             // ...
-//         })
-//         .catch((error) => {
-//             const errorCode = error.code;
-//             const errorMessage = error.message;
-//             console.log(errorCode, errorMessage);
-//             // ..
-//         });
- 
-   
-//     }
-
-
-
-//     const onGoogleSubmit = async (e) => {
-//         e.preventDefault()
-
-//         const provider = new GoogleAuthProvider();
-//         // Start a sign in process for an unauthenticated user.
-//         provider.addScope('profile');
-//         provider.addScope('email');
-        
-
-//         const result = await signInWithPopup(auth, provider)
-//         .then((userResult) => {
-//                 // The signed-in user info.
-//         const user = userResult.user;
-//         // This gives you a Google Access Token.
-//         const credential = GoogleAuthProvider.credentialFromResult(result);
-//         const token = credential.accessToken;
-//         console.log(user)
-//         console.log(token);
-//         navigate("/login")
-            
-            
-//             // Signed in
-//             // const user = userCredential.user;
-//             // console.log(user);
-//             // navigate("/login")
-//             // ...
-//         })
-//         .catch((error) => {
-//             const errorCode = error.code;
-//             const errorMessage = error.message;
-//             console.log(errorCode, errorMessage);
-//             // ..
-//         });
-//     }
-
-
-//   return (
-//     <main >        
-//         <section>
-//             <div>
-//                 <div>                  
-//                     <h1> FocusApp </h1>                                                                            
-//                     <form>                                                                                            
-//                         <div>
-//                             <label htmlFor="email-address">
-//                                 Email address
-//                             </label>
-//                             <input
-//                                 type="email"
-//                                 label="Email address"
-//                                 value={email}
-//                                 onChange={(e) => setEmail(e.target.value)}  
-//                                 required                                    
-//                                 placeholder="Email address"                                
-//                             />
-//                         </div>
-
-//                         <div>
-//                             <label htmlFor="password">
-//                                 Password
-//                             </label>
-//                             <input
-//                                 type="password"
-//                                 label="Create password"
-//                                 value={password}
-//                                 onChange={(e) => setPassword(e.target.value)} 
-//                                 required                                 
-//                                 placeholder="Password"              
-//                             />
-//                         </div>                                             
-                        
-//                         <button
-//                             type="submit" 
-//                             onClick={onSubmit}                        
-//                         >  
-//                             Sign up                                
-//                         </button>
-                                                                     
-//                     </form>
-                   
-//                     <p>
-//                         Use your Google account?{' '}
-//                     <button onClick={onGoogleSubmit}> Sign up with Google </button>
-//                     </p>     
-//                     <p>
-//                         Already have an account?{' '}
-//                         <NavLink to="/login" >
-//                             Sign in
-//                         </NavLink>
-//                     </p>                   
-//                 </div>
-//             </div>
-//         </section>
-//     </main>
-//   )
-// }
- 
-// export default Signup

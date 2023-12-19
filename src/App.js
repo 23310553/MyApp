@@ -13,7 +13,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import ProtectedRoute from './components/widgets/ProtectedRoute';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrentUser } from './components/store/userSlice';
-//import NotFound from './page/NotFound';
+import GridExample from './components/myTable';
+import NotFound from './NotFound';
 
 
 function App() {
@@ -47,18 +48,17 @@ function App() {
                   element={<MyTree />}
                 />
 
-                {/* <Route
-                  path="/notes"
-                  element={
-                    < Notes />
-                  }
-                /> */}
+                <Route
+                  path="/mytable"
+                  element={<GridExample />}
+                />
+
 
               </Route>
 
               <Route path="/signup" element={<Signup />} />
               <Route path="/" element={<Login />} />
-              {/* <Route path="*" element={< NotFound />} /> */}
+              <Route path="*" element={< NotFound />} />
             </Routes>
           </div>
         </section>

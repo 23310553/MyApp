@@ -62,7 +62,7 @@ const Navbar = () => {
                 <div>
                     <ul>
                         <Text className="pl-4 text-2xl mt-6 font-bold mb-12">
-                            Focus<span className="text-tertiary">Vest</span>
+                            <span className="text-tertiary">Menu</span>
                         </Text>
 
                         <NavLink
@@ -99,7 +99,6 @@ const Navbar = () => {
 
     return (
         <>
-
             <nav className="flex justify-between px-3 pt-8">
                 <div className='flex items-center space-x-2'>
                     <div className='md:hidden block'>
@@ -119,21 +118,13 @@ const Navbar = () => {
                             </div>
                         ))}
                     </div>
-                    <Text className="text-white font-bold text-xl">
-                        Welcome, <span> {user.displayName} </span>
-                    </Text>
-                </div>
 
                 <div className='relative space-y-2'>
 
-                    {/* <BsPencilSquare  /> */}
                     <BsPersonCircle onClick={handleOpenNavbar} className='cursor-pointer text-white' />
                     {
                         open && <div className='absolute top-5 right-0 flex justify-end border border-slate-500 bg-sidebar z-40'>
                             <div className='flex flex-col text-right justify-right pl-20 pr-2 py-4 space-y-4'>
-                                <button className="text-right text-xs text-white underline">
-                                    View Profile
-                                </button>
                                 <button className="px-6 py-2 text-xs text-white bg-secondary" onClick={handleLogout}>
                                     Logout
                                 </button>
@@ -141,7 +132,11 @@ const Navbar = () => {
                         </div>
                     }
                 </div>
-
+                
+                <Text className="text-white font-bold text-xl">
+                        Welcome, <span> {user.displayName} </span>
+                    </Text>
+                </div>
 
             </nav>
         </>

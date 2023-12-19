@@ -1,19 +1,14 @@
 import React, { Component } from 'react';
-import clone from 'clone';
+// import clone from 'clone';
 import Tree from 'react-d3-tree';
 import Switch from './Switch';
-import MixedNodeElement from './MixedNodeElement';
 import PureSvgNodeElement from './PureSvgNodeElement';
-import MixedNodeInputElement from './MixedNodeInputElement';
 import '../App.css';
-import { collection, getDocs, where, query } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from '../config/firebase';
-
-
-// Data examples
-// import orgChartJson from './examples/org-chart.json';
-import flareJson from '../examples/d3-hierarchy-flare.json';
-import reactTree from '../examples/reactRepoTree';
+import AssignLineManager from './listComponent';
+import AddEmployeeDataForm from './addNewEmployee';
+// import MyTable from './myTable';
 // import { Auth } from './auth';
 
 
@@ -65,41 +60,6 @@ async function fetchData() {
       const ceo = reporteesData[null]
       return mergeIntoTree(associateData[ceo.id], reporteesData, associateData)
 
-      // Counter for async events
-      var countManagers = 0;
-
-      // Iterate through each user to get their events
-      for (const userDocId of Object.keys(data)) {
-        // Create a query to get all events for each user
-        const managersForCurrentUserRef = collection(db,'managers')
-        const managerqueryRef = query(managersForCurrentUserRef, where('userID', '==', userDocId));
-        const managersForUserSnapshot = await getDocs(managerqueryRef);
-
-        managersForUserSnapshot.forEach((doc) => {
-          // doc.data() is never undefined for query doc snapshots
-          console.log(doc.id, " => ", doc.data());
-        });
-
-        // Count events
-        countManagers++;
-
-        managersForUserSnapshot.forEach((managerDoc) => {
-          var managerDocData = managerDoc.data();
-
-          // Check if the events array exists, if not, create it
-          if (data[managerDocData.userId].children === undefined) {
-            data[managerDocData.userId].children = [];
-          }
-
-          data[managerDocData.userId].children.push(managerDocData);
-        });
-      }
-
-      // Check if all async events have been downloaded
-      if (countManagers === Object.keys(data).length) {
-        // Lookup for events in every user has finished
-        console.log(data);
-      }
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -107,27 +67,10 @@ async function fetchData() {
     return {}
   }
 
-  // Call the async function
-  //fetchData();
-
-// const employeeCollectionRef = collection(db, `employees`);
-// const employeeQuerySnapshot = await getDocs(employeeCollectionRef);
-// const employeeDataFromFirebase = employeeQuerySnapshot.docs.map((doc) => doc.data());
-
-// // Assuming "managers" is the collection in Firestore
-// const lineManagerCollectionRef = collection(db, `managers`);
-// const lineManagerQuerySnapshot = await getDocs(lineManagerCollectionRef);
-// const lineManagerDataFromFirebase = lineManagerQuerySnapshot.docs.map((doc) => doc.data());
-
-// // Combine Firebase data
-// const combinedFirebaseData = [...employeeDataFromFirebase, ...lineManagerDataFromFirebase];
-
-// console.log(employeeCollectionRef)
-// const obj = JSON.parse(employeeCollectionRef);
-
 function mergeIntoTree(associateData, reporteesData, allData) {
     var mergedItem = {
-        name: associateData.Name,
+        name: associateData.Surname + ", " + associateData.Name,
+        attributes:[],
         children: []
     }
 
@@ -138,6 +81,8 @@ function mergeIntoTree(associateData, reporteesData, allData) {
     return mergedItem;
 }
 
+
+
 const customNodeFnMapping = {
   svg: {
     description: 'Default - Pure SVG node & label (IE11 compatible)',
@@ -146,36 +91,6 @@ const customNodeFnMapping = {
         nodeDatum={rd3tProps.nodeDatum}
         toggleNode={rd3tProps.toggleNode}
         orientation={appState.orientation}
-      />
-    ),
-  },
-  mixed: {
-    description: 'MixedNodeElement - SVG `circle` + `foreignObject` label',
-    fn: ({ nodeDatum, toggleNode }, appState) => (
-      <MixedNodeElement
-        nodeData={nodeDatum}
-        triggerNodeToggle={toggleNode}
-        foreignObjectProps={{
-          width: appState.nodeSize.x,
-          height: appState.nodeSize.y,
-          x: -50,
-          y: 50,
-        }}
-      />
-    ),
-  },
-  input: {
-    description: 'MixedNodeElement - Interactive nodes with inputs',
-    fn: ({ nodeDatum, toggleNode }, appState) => (
-      <MixedNodeInputElement
-        nodeData={nodeDatum}
-        triggerNodeToggle={toggleNode}
-        foreignObjectProps={{
-          width: appState.nodeSize.x,
-          height: appState.nodeSize.y,
-          x: -50,
-          y: 50,
-        }}
       />
     ),
   },
@@ -225,7 +140,7 @@ class MyTree extends Component {
         nodes: {
           node: {
             circle: {
-              fill: '#52e2c5',
+              fill: '#cc66ff',
             },
             attributes: {
               stroke: '#000',
@@ -244,7 +159,6 @@ class MyTree extends Component {
     };
 
     this.setTreeData = this.setTreeData.bind(this);
-    this.setLargeTree = this.setLargeTree.bind(this);
     this.setOrientation = this.setOrientation.bind(this);
     this.setPathFunc = this.setPathFunc.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -262,13 +176,6 @@ class MyTree extends Component {
     this.setState({
       data,
       totalNodeCount: countNodes(0, Array.isArray(data) ? data[0] : data),
-    });
-  }
-
-  setLargeTree(data) {
-    this.setState({
-      data,
-      transitionDuration: 0,
     });
   }
 
@@ -365,29 +272,17 @@ class MyTree extends Component {
       this.setState({ nodeSize });
     }
   }
+  
 
-  addChildNode = () => {
-    const data = clone(this.state.data);
-    const target = data[0].children ? data[0].children : data[0]._children;
-    this.addedNodesCount++;
-    target.push({
-      name: `Inserted Node ${this.addedNodesCount}`,
-      id: `inserted-node-${this.addedNodesCount}`,
-    });
-    this.setState({
-      data,
-    });
-  };
-
-  removeChildNode = () => {
-    const data = clone(this.state.data);
-    const target = data[0].children ? data[0].children : data[0]._children;
-    target.pop();
-    this.addedNodesCount--;
-    this.setState({
-      data,
-    });
-  };
+  // removeChildNode = () => {
+  //   const data = clone(this.state.data);
+  //   const target = data[0].children ? data[0].children : data[0]._children;
+  //   target.pop();
+  //   this.addedNodesCount--;
+  //   this.setState({
+  //     data,
+  //   });
+  // };
 
   componentDidMount() {
     const dimensions = this.treeContainer.getBoundingClientRect();
@@ -407,56 +302,23 @@ class MyTree extends Component {
           <div className="column-left">
             <div className="controls-container">
               <div className="prop-container">
-                <h2 className="title">React D3 Tree</h2>
+                <h2 className="title">Tree Hierarchy Model</h2>
                 <h3 className="title">
                   Epi Use employee hierarchy management
-                </h3>
-                <h4 className="prop">Examples</h4>
-                <div style={{ marginBottom: '5px' }}>
-                  <button
-                    type="button"
-                    className="btn btn-controls btn-block"
-                    onClick={() => this.setTreeData({})}
-                  >
-                    Org chart (small)
-                  </button>
-                </div>
-                <div>
-                  <button
-                    type="button"
-                    className="btn btn-controls btn-block"
-                    onClick={() => this.setTreeData(flareJson)}
-                  >
-                    d3-hierarchy - flare.json (medium)
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-controls btn-block"
-                    onClick={() => this.setTreeData(reactTree)}
-                  >
-                    React repository (large)
-                  </button>
-                </div>
+                </h3>              
               </div>
 
               <div className="prop-container">
+                <h2 className="prop">
+                  Assign a Line Manager
+                </h2>
+                < AssignLineManager/>
                 <h4 className="prop">
-                  Dynamically updating <code>data</code>
+                  Add new Employee
                 </h4>
-                <button
-                  type="button"
-                  className="btn btn-controls btn-block"
-                  onClick={() => this.addChildNode()}
-                >
-                  Insert Node
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-controls btn-block"
-                  onClick={() => this.removeChildNode()}
-                >
-                  Remove Node
-                </button>
+                <AddEmployeeDataForm/>
+
+                
               </div>
 
               <div className="prop-container">
@@ -507,19 +369,6 @@ class MyTree extends Component {
                 >
                   {'Step'}
                 </button>
-              </div>
-
-              <div className="prop-container">
-                <label className="prop" htmlFor="customNodeElement">
-                  Custom Node Element
-                </label>
-                <select className="form-control" onChange={this.handleCustomNodeFnChange}>
-                  {Object.entries(customNodeFnMapping).map(([key, { description }]) => (
-                    <option key={key} value={key}>
-                      {description}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="prop-container">
