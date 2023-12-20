@@ -1,10 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase'; 
 
 const ManagerDropdown = ({ onSelect }) => {
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [dataChanged, setDataChanged] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'associates'), () => {
+      // Set dataChanged to trigger a re-render
+      setDataChanged(true);
+    });
+
+  // Cleanup function to unsubscribe from the snapshot listener
+  return () => {
+    unsubscribe();
+  };
+  }, [dataChanged]);
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -18,6 +32,7 @@ const ManagerDropdown = ({ onSelect }) => {
           userList.push({
             id: userDoc.id,
             name: userData.Name, 
+            surname: userData.Surname,
           });
         });
 
@@ -28,7 +43,7 @@ const ManagerDropdown = ({ onSelect }) => {
     };
 
     fetchUsers();
-  }, []);
+  }, [dataChanged]); // Trigger fetchUsers when dataChanged state changes
 
   const handleUserSelect = (event) => {
     const selectedId = event.target.value;
@@ -43,7 +58,7 @@ const ManagerDropdown = ({ onSelect }) => {
         <option value="">Manager</option>
         {users.map((user) => (
           <option key={user.id} value={user.id}>
-            {user.name}
+            {user.name} {user.surname}
           </option>
         ))}
       </select>

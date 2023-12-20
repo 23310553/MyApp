@@ -63,13 +63,15 @@ const Login = () => {
                         <div className='flex flex-col justify-center h-screen'>
                             <div className=" px-10 ">
                                 <div>
-                                    <Text className="text-2xl text-white text-center font-bold mb-2">
-                                        CRM App
-                                    </Text>
-
-                                    <h2 className="text-white text-center md:text-sm text-xs tracking-tight text-gray-900">
-                                        Welcome Back
+                                    <h2>
+                                        <Text className="text-2xl text-white text-center font-bold mb-2">
+                                            CRM App
+                                        </Text>
                                     </h2>
+
+                                    <h3 className="text-white text-center md:text-sm text-xs tracking-tight text-gray-900">
+                                        Welcome Back
+                                    </h3>
                                 </div>
 
                                 <div className='mt-4 text-xs' style={{ color: "red" }}>

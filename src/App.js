@@ -14,7 +14,8 @@ import ProtectedRoute from './components/widgets/ProtectedRoute';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrentUser } from './components/store/userSlice';
 import GridExample from './components/myTable';
-import NotFound from './NotFound';
+import NotFound from './components/widgets/NotFound';
+// import Sidebar from './components/widgets/Sidebar';
 
 
 function App() {
@@ -69,30 +70,3 @@ function App() {
 }
 
 export default App;
-
-
-// import React, {useState, useEffect} from 'react';
-// import Home from './components/home';
-// import Signup from './components/createUser';
-// import Login from './components/signInUser';
-// import { BrowserRouter as Router} from 'react-router-dom';
-// import {Routes, Route} from 'react-router-dom';
- 
-// function App() {
- 
-//   return (
-//     <Router>
-//       <div>
-//         <section>                              
-//             <Routes>                                                                        
-//                 <Route path="/" element={<Home/>}/>
-//                 <Route path="/signup" element={<Signup/>}/>
-//                 <Route path="/login" element={<Login/>}/>
-//             </Routes>                    
-//         </section>
-//       </div>
-//     </Router>
-//   );
-// }
- 
-// export default App;

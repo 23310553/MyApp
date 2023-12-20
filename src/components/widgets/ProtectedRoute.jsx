@@ -1,7 +1,7 @@
 import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar';
-import Navbar from './Navbar';
+import NavigationBar from './Navbar';
 
 const ProtectedRoute = ({ user, children }) => {
     if (!user) {
@@ -13,9 +13,8 @@ const ProtectedRoute = ({ user, children }) => {
                 < Sidebar />
             </div>
 
-
             <div className="main-width md:pr-4">
-                <Navbar />
+                <NavigationBar />
                 <Outlet />
             </div>
         </section>

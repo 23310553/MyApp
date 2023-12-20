@@ -116,18 +116,20 @@ const Signup = () => {
     return (
         <main >
             <section>
-                <div className="grid md:grid-cols-2 h-screen  ">
+                <div className="sign-up grid md:grid-cols-2 h-screen  ">
                     <div className="md:w-full w-4/5 mx-auto ">
                         <div className='flex md:w-4/5  mx-auto flex-col justify-center h-screen '>
                             <div>
                                 <div>
+                                    <h1>
                                     <Text className="text-2xl text-white text-center font-bold mb-2">
                                         CRM App
                                     </Text>
+                                    </h1>
 
-                                    <h2 className="text-white text-center text-sm md:text-xs tracking-tight text-gray-900">
+                                    <h3 className="text-white text-center text-sm md:text-xs tracking-tight text-gray-900">
                                         Are you new? Sign up to CRM App today!
-                                    </h2>
+                                    </h3>
                                 </div>
 
                                 <div className='mt-4 text-xs' style={{ color: "red" }}>

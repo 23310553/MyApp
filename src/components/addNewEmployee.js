@@ -1,23 +1,28 @@
-import React, { useState } from 'react';
-import { collection, doc, addDoc, query, orderBy, limit, getDocs } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { collection, doc, addDoc, query, orderBy, limit, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import ManagerDropdown from './dropdownListManager';
-
-
+import RoleDropdown from './dropdownRole';
 
 const AddEmployeeDataForm = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [reportsTo, setReportsTo] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
   const [selectedManager, setSelectedManager] = useState(null);
   const [birthdate, setBirthdate] = useState('');
   const [salary, setSalary] = useState('');
+
 
   const handleManagerSelect = (userId) => {
     setSelectedManager(userId);
     console.log('Manager ID is', userId);
   };
-  var employeeID = 1;
+
+  const handleRoleSelect = (roleId) => {
+    setSelectedRole(roleId);
+    console.log('Role ID is', roleId);
+  };
 
   const handleAddData = async () => {
     try {
@@ -33,9 +38,9 @@ const AddEmployeeDataForm = () => {
         Name: name,
         Surname: surname,
         ReportsTo: selectedManager ? doc(db, 'associates/' + selectedManager) : null, // Set to null if no ReportsTo value provided
-        // Role: doc(db, 'associates/'+selectedManager),
+        Role: doc(db, 'roles/'+selectedRole),
         Birthdate: birthdate,
-        Salary: salary,
+        Salary: parseInt(salary),
 
       });
 
@@ -45,21 +50,30 @@ const AddEmployeeDataForm = () => {
       setName('');
       setSurname('');
       setReportsTo('');
+      setSelectedRole('');
       setBirthdate('');
-      setSalary('')
+      setSalary('');
+
+      
     } catch (error) {
       console.error('Error adding data:', error);
     }
   };
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(db, 'associates'), () => {
+      // Trigger a re-fetch when there is a change in the 'associates' collection
+      handleAddData();
+    });
+
+    // Cleanup function to unsubscribe from the snapshot listener
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   return (
     <div>
-      <h2>Add new Employee</h2>
-      {/* <label>
-        EmployeeID:
-        <input type="text" value={name} onChange={(e) => setEmployeeID(e.target.value)} />
-      </label>
-      <br /> */}
       <label>
         Name:
         <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
@@ -71,14 +85,12 @@ const AddEmployeeDataForm = () => {
       </label>
       <br />
       <label>
-        Reports To:
         <ManagerDropdown onSelect={handleManagerSelect} />
       </label>
-      {/* <br />
+      <br />
       <label>
-        Role:
-        <input type="text" value={role} onChange={(e) => setRole(e.target.value)} />
-      </label> */}
+        <RoleDropdown onSelect={handleRoleSelect} />
+      </label>
       <br />
       <label>
         Birthdate (dd/mm/yyyy):
@@ -90,7 +102,7 @@ const AddEmployeeDataForm = () => {
         <input type="text" value={salary} onChange={(e) => setSalary(e.target.value)} />
       </label>
       <br />
-      <button onClick={handleAddData}>Add Employee</button>
+      <button onClick={handleAddData}> Add </button>
     </div>
   );
 };

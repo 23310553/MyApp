@@ -6,7 +6,7 @@ import PureSvgNodeElement from './PureSvgNodeElement';
 import '../App.css';
 import { collection, getDocs } from "firebase/firestore";
 import { db } from '../config/firebase';
-import AssignLineManager from './listComponent';
+import AssignLineManager from './assignLineManager';
 import AddEmployeeDataForm from './addNewEmployee';
 // import MyTable from './myTable';
 // import { Auth } from './auth';
@@ -272,17 +272,6 @@ class MyTree extends Component {
       this.setState({ nodeSize });
     }
   }
-  
-
-  // removeChildNode = () => {
-  //   const data = clone(this.state.data);
-  //   const target = data[0].children ? data[0].children : data[0]._children;
-  //   target.pop();
-  //   this.addedNodesCount--;
-  //   this.setState({
-  //     data,
-  //   });
-  // };
 
   componentDidMount() {
     const dimensions = this.treeContainer.getBoundingClientRect();
@@ -306,19 +295,6 @@ class MyTree extends Component {
                 <h3 className="title">
                   Epi Use employee hierarchy management
                 </h3>              
-              </div>
-
-              <div className="prop-container">
-                <h2 className="prop">
-                  Assign a Line Manager
-                </h2>
-                < AssignLineManager/>
-                <h4 className="prop">
-                  Add new Employee
-                </h4>
-                <AddEmployeeDataForm/>
-
-                
               </div>
 
               <div className="prop-container">
