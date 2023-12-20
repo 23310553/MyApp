@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { collection, doc, addDoc} from 'firebase/firestore';
+import { collection, doc, addDoc, query, orderBy, limit, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import ManagerDropdown from './dropdownListManager';
 
@@ -12,23 +12,27 @@ const AddEmployeeDataForm = () => {
   const [selectedManager, setSelectedManager] = useState(null);
   const [birthdate, setBirthdate] = useState('');
   const [salary, setSalary] = useState('');
-    
-  
-    const handleManagerSelect = (userId) => {
+
+  const handleManagerSelect = (userId) => {
     setSelectedManager(userId);
     console.log('Manager ID is', userId);
-    };
-    var employeeID=1;
+  };
+  var employeeID = 1;
 
-    const handleAddData = async () => {
-        try { 
+  const handleAddData = async () => {
+    try {
       // Add data to the Firestore collection
       const associatesCollectionRef = collection(db, 'associates');
+      const employeeIDQuery = await query(associatesCollectionRef, orderBy('EmployeeID', 'desc'), limit(1));
+      const employeeDocs = await getDocs(employeeIDQuery);
+      const latestEmployee = employeeDocs.docs.length > 0 ? employeeDocs.docs[0].data() : 1;
+      let currentHighestEmployeeID = parseInt(latestEmployee.EmployeeID);
+      
       const newAssociateDocRef = await addDoc(associatesCollectionRef, {
-        EmployeeID: employeeID++,
+        EmployeeID: currentHighestEmployeeID + 1,
         Name: name,
         Surname: surname,
-        ReportsTo: doc(db, 'associates/'+selectedManager) || null, // Set to null if no ReportsTo value provided
+        ReportsTo: selectedManager ? doc(db, 'associates/' + selectedManager) : null, // Set to null if no ReportsTo value provided
         // Role: doc(db, 'associates/'+selectedManager),
         Birthdate: birthdate,
         Salary: salary,
