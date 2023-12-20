@@ -13,8 +13,8 @@ function GridExample() {
     { field: 'EmployeeID' },
     { field: 'Name' },
     { field: 'Surname' },
-    // { field: 'ReportsTo' },
-    // { field: 'Role' },
+    { field: 'ReportsTo' },
+    { field: 'Role' },
     { field: 'Salary' },
     { field: 'Birthdate' },
   ]);
@@ -29,17 +29,31 @@ function GridExample() {
     const fetchInfo = async () => {
       try {
         const userCollectionRef = collection(db, 'associates');
-        const docs = await getDocs(userCollectionRef);
+        const roleCollectionRef = collection(db, 'roles');
+        
+        const [
+          users,
+          roles
+        ] = await Promise.all([
+          getDocs(userCollectionRef),
+          getDocs(roleCollectionRef)
+        ]);
+
+        const rolesMap = roles.docs.reduce((acc, role) => { return { ...acc, [role.id]: role.data() } }, {});
+        const usersMap = users.docs.reduce((acc, user) => { return { ...acc, [user.id]: user.data() } }, {});
 
         let fetchedData = [];
-        docs.forEach((doc) => {
+        users.forEach((doc) => {
           const data = doc.data();
+          const roleObj = data.Role ? rolesMap[data.Role.id]: {};
+          const reportsToObj = data.ReportsTo ? usersMap[data.ReportsTo.id]: {};
+
           fetchedData.push({
             EmployeeID: data.EmployeeID,
             Name: data.Name,
             Surname: data.Surname,
-            // ReportsTo: data.ReportsTo,
-            // Role: data.Role,
+            ReportsTo: reportsToObj.Name ? `${reportsToObj.Name} ${reportsToObj.Surname}` : "No one",
+            Role: roleObj.Name ? roleObj.Name : "Not found",
             Salary: data.Salary,
             Birthdate: data.Birthdate,
           });
