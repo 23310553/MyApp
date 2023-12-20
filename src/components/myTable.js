@@ -149,7 +149,7 @@ function GridExample() {
 
   // Container: Defines the data grid's theme & dimensions.
   return (
-    <div className="myTable ag-theme-alpine" style={{ height: 800, width: 1400 }}>
+    <div className="myTable ag-theme-alpine" style={{ height: 800, width: 800 }}>
       <AgGridReact rowData={rowData} columnDefs={columnDefs} defaultColDef={{defaultColDef}} animateRows={true}/>
     </div>
   );
