@@ -4,7 +4,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Formik, Field, Form } from 'formik';
-//import signup from '../components/assets/bg-login.jpg';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -28,9 +27,9 @@ const Login = () => {
         }
 
         if (!values.password) {
-            errors.password = "Password number is required";
+            errors.password = "Password must contain a number";
         } else if (values.password.length <= 8) {
-            errors.password = "Password length must be more than 7"
+            errors.password = "Password must be more than 7 characters"
         }
 
         return errors;
@@ -64,13 +63,15 @@ const Login = () => {
                         <div className='flex flex-col justify-center h-screen'>
                             <div className=" px-10 ">
                                 <div>
-                                    <Text className="text-2xl text-white text-center font-bold mb-2">
-                                        Focus<span className="text-tertiary">App</span>
-                                    </Text>
-
-                                    <h2 className="text-white text-center md:text-sm text-xs tracking-tight text-gray-900">
-                                        Welcome Back
+                                    <h2>
+                                        <Text className="text-2xl text-white text-center font-bold mb-2">
+                                            CRM App
+                                        </Text>
                                     </h2>
+
+                                    <h3 className="text-white text-center md:text-sm text-xs tracking-tight text-gray-900">
+                                        Welcome Back
+                                    </h3>
                                 </div>
 
                                 <div className='mt-4 text-xs' style={{ color: "red" }}>
@@ -95,8 +96,6 @@ const Login = () => {
                                             }) => (
                                                 <Form className="mt-8 space-y-6" >
                                                     <div className=" space-y-6 rounded-md shadow-sm">
-
-
                                                         <div>
                                                             <label htmlFor="email-address" className="sr-only">
                                                                 Email address

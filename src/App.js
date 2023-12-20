@@ -13,7 +13,9 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import ProtectedRoute from './components/widgets/ProtectedRoute';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCurrentUser } from './components/store/userSlice';
-//import NotFound from './page/NotFound';
+import GridExample from './components/myTable';
+import NotFound from './components/widgets/NotFound';
+// import Sidebar from './components/widgets/Sidebar';
 
 
 function App() {
@@ -47,18 +49,17 @@ function App() {
                   element={<MyTree />}
                 />
 
-                {/* <Route
-                  path="/notes"
-                  element={
-                    < Notes />
-                  }
-                /> */}
+                <Route
+                  path="/mytable"
+                  element={<GridExample />}
+                />
+
 
               </Route>
 
               <Route path="/signup" element={<Signup />} />
               <Route path="/" element={<Login />} />
-              {/* <Route path="*" element={< NotFound />} /> */}
+              <Route path="*" element={< NotFound />} />
             </Routes>
           </div>
         </section>
@@ -69,30 +70,3 @@ function App() {
 }
 
 export default App;
-
-
-// import React, {useState, useEffect} from 'react';
-// import Home from './components/home';
-// import Signup from './components/createUser';
-// import Login from './components/signInUser';
-// import { BrowserRouter as Router} from 'react-router-dom';
-// import {Routes, Route} from 'react-router-dom';
- 
-// function App() {
- 
-//   return (
-//     <Router>
-//       <div>
-//         <section>                              
-//             <Routes>                                                                        
-//                 <Route path="/" element={<Home/>}/>
-//                 <Route path="/signup" element={<Signup/>}/>
-//                 <Route path="/login" element={<Login/>}/>
-//             </Routes>                    
-//         </section>
-//       </div>
-//     </Router>
-//   );
-// }
- 
-// export default App;

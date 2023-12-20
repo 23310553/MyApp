@@ -1,54 +1,79 @@
-import React from 'react';
-import Text from '../elements/Text/index';
-import { NavLink } from 'react-router-dom';
+import AssignLineManager from '../assignLineManager';
+import AddEmployeeDataForm from '../addNewEmployee';
+import DeleteEmployee from '../deleteEmployee';
+import { FaBars } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../config/firebase';
+import { Box, Divider, List, SwipeableDrawer } from '@mui/material';
+import GravatarComponent from '../elements/Profile Image/gravitarImage';
 
 const Sidebar = () => {
-    return (
-        <aside className="text-white md:block hidden">
-            <ul>
-                <Text className="md:block hidden text-2xl pl-4 mt-6 font-bold mb-12">
-                    Navigate<span className="text-tertiary"> Application</span>
-                </Text>
+  const [open, setOpen] = useState(false);
+  const [state, setState] = useState({
+    left: false,
+  });
 
-                <div className='flex flex-col md:hidden items-center justify-between p-4 mt-6 space-y-6   mb-12'>
-                    <Text className="text-sm "> X </Text>
-                    <Text className="text-2xl font-bold">
-                        F<span className="text-tertiary">V</span>
-                    </Text>
+  const user = useSelector((state) => state.user.value);
+  const navigate = useNavigate();
 
+  const toggleDrawer = (anchor, open) => () => {
+    setState({ ...state, [anchor]: open });
+  };
 
-                </div>
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        navigate('/');
+        console.log('Signed out successfully');
+      })
+      .catch((error) => {
+        console.error('Error signing out:', error);
+      });
+  };
 
+  return (
+    <aside className="sidebar text-white">
+      <ul>
+        <div className="flex items-center space-x-2">
+            <GravatarComponent />
+        </div>
 
-                <NavLink
-                    to="/home"
-                    className={({ isActive }) =>
-                        isActive ? "bg-secondary w-full block border-l-2 border-l-tertiary mr-2 py-3  text-sm"
-                            :
-                            "mr-2 text-sm py-3 "
-                    }
-                >
-                    <li className="p-4 ">
-                        Home
-                    </li>
-                </NavLink>
+        <div className="text-white font-bold text-xl">
+          Welcome, <span> {user.displayName} </span>
+        </div>
+        <div>
+            <button 
+                onClick={handleLogout}
+                className="cursor-pointer text-white">
+                Logout
+            </button>
+        </div>
+        <br />
+          <hr />
 
-                <NavLink
-                    to="/notes"
-                    className={({ isActive }) =>
-                        isActive ? "bg-secondary w-full block border-l-2 border-l-tertiary mr-2 py-3  text-sm"
-                            :
-                            "mr-2 text-sm py-3 pl-4"
-                    }
-                >
-                    <li className="p-4">
-                        Notes
-                    </li>
-                </NavLink>
+        <div className="prop-container">
+          <h4 className="text-white font-bold mb-4">Assign a Line Manager</h4>
+          <AssignLineManager />
+          <br />
+        </div>
+        <hr />
+        <div className="prop-container">
+          <h4 className="text-white font-bold mb-4">Add new Employee</h4>
+          <AddEmployeeDataForm />
+          <br />
+        </div>
+        <hr />
+        <div className="prop-container">
+          <h4 className="text-white font-bold mb-4">Delete Employee</h4>
+          <DeleteEmployee />
+          <br />
+        </div>
+      </ul>
+    </aside>
+  );
+};
 
-            </ul>
-        </aside>
-    )
-}
-
-export default Sidebar
+export default Sidebar;
