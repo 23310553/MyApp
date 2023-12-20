@@ -61,9 +61,15 @@ function GridExample() {
         closeOnApply: true}
     },
     { field: 'Salary', 
-      filter: 'agNumberColumnFilter' },
+      filter: 'agNumberColumnFilter',
+      filterParams:
+      {buttons: ['apply', 'reset'],
+        closeOnApply: true}},
     { field: 'Birthdate', 
-      filter:'agDateColumnFilter'},
+      filter:'agDateColumnFilter',
+      filterParams:
+      {buttons: ['apply', 'reset'],
+        closeOnApply: true}},
   ]);
 
 

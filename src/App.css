@@ -178,6 +178,7 @@
   padding-top: 10px;
   overflow-y: auto;
   border-right: 1px solid gray;
+  z-index: 1000;
 }
 
 .sidebar ul {
